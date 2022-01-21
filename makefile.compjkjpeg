@@ -89,7 +89,7 @@ OBJ =	    main.o f90DataTypes.o  random.o writegif.o nbin.o\
     kgainBLAS.o interp_melt_percentages.o \
     rteModule.o getScattProp.o armadillo_funcs.o cmbAlg.o\
     writeCMBOut_TK_FS.o  writeCMBOut_TK.o writeCMBTOut_TK.o writeCMBOut_TK_T.o\
-    clutterCorrection_bzd.o oe_output_kugmi.o check_nan.o
+    clutterCorrection_bzd.o oe_output_kugmi.o check_nan.o oe_output_kutmi.o 
 
 #read_TRMM.o read_GPM.o
 OBJEXE	=    $(OBJ)  mainf.o mainf_t.o  
@@ -488,6 +488,9 @@ readENV.01.o:	src_c/readENV.01.c
 
 oe_output_kugmi.o:    src_c/oe_output_kugmi.c
 		      $(CC) -D$(CPP_SWITCH) -c  -O2  $(INC) src_c/oe_output_kugmi.c
+
+oe_output_kutmi.o:    src_c/oe_output_kutmi.c
+		      $(CC) -D$(CPP_SWITCH) -c  -O2  $(INC) src_c/oe_output_kutmi.c
 
 writeCMBOut_TK.o:	src_c/writeCMBOut_TK.c
 		$(CC) -c -g -D$(CPP_SWITCH) -O2 $(INC) src_c/writeCMBOut_TK.c
