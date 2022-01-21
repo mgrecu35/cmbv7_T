@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	  //if(i==26)
 	    {
 	      printf("GMIretsub\n");
-	      //gmiretsub_(&icL, &i, &orbNumb, &ialg, &idir);
+	      gmiretsub_(&icL, &i, &orbNumb, &ialg, &idir);
 	      
 	      printf("Calling radarretsub2\n");
 	      radarretsub2_(&nmu,  &nmfreq,   &icL, tbRgrid,  
