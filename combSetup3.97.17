@@ -1,0 +1,10 @@
+export FORT_CONVERT87=BIG_ENDIAN
+export TKIO=/PANFS/user/home/tkio/tkio-3.99
+export HDF5_LIB=/PANFS/local/centos7/devlib/upgradeVer/HDF5-1.10.5/lib
+export HDF5_INC=/PANFS/local/centos7/devlib/upgradeVer/HDF5-1.10.5/include 
+export HDF_LIB=/PANFS/local/centos7/devlib/upgradeVer/HDF4.2.13/lib
+export HDF_INC=/PANFS/local/centos7/devlib/upgradeVer/HDF4.2.13/include
+export HDF4_LIB=/PANFS/local/centos7/devlib/upgradeVer/HDF4.2.13/lib
+export HDF4_INC=/PANFS/local/centos7/devlib/upgradeVer/HDF4.2.13/include
+source /PANFS/local/centos7/intel/Compiler/18.0.3/bin/compilervars.sh  intel64
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HDF5_LIB}:${HDF4_LIB}
