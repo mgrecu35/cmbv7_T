@@ -55,7 +55,7 @@ void pix_screen_ocean_( float *tb10h, float *tb10v,
   lwp = 0.399635*log(285. - T22V) - 1.40692*log(285. - T37V) + 4.299;
   row = (int)(*lon + 180.0)/2.5;
   col = (int)(*lat+ 90.0)/2.0; 
-  sstv = 0.1*sstdata[144*91*(*mm)+(row)*91+col];
+  sstv = 0.1*sstdata[144*91*(*mm-1)+(row)*91+col];
   hfreez=(sstv-273)/6.5;
   lwp_max = 0.2*hfreez/4.;
   /*	    printf("%g %g %g %g %g\n",lwp, lwp_max, hfreez, T22V,
