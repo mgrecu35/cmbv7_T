@@ -142,6 +142,7 @@ subroutine mainfort(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
   
   nmfreq=8
   nmu=5
+  call init_keras2()
   call init_random_seed(rseed1,rseed2)
   print *, 'Random Seeds : ',rseed1,rseed2
   print*, ialg
@@ -660,7 +661,7 @@ subroutine do_chunkx(i,ialg, idir)
   use globalData
   implicit none
 
-  integer :: i, ialg
+  integer :: i, ialg, n1
   integer :: ifract, idir, j
   real :: x1L, x2L
   INTEGER*4     readenv, readenvx 
@@ -701,10 +702,15 @@ subroutine do_chunkx(i,ialg, idir)
           dPRdata%snowIceCover, dPRdata%seaIceConcentration, dPRdata%cBEst, &
           dPRData%envTemp,dPRData%binClutterFree,dPRData%binZeroDegree)
   endif
-  print*, maxval(dPRData%xlat)
+  print*, maxval(dPRData%xlat), dPRData%n1c21
   iconus=0
-  if(dprData%xlat(1,24)>30 .and. dprData%xlat(1,24)<50 .and. &
-       dprData%xlon(1,24)>-125 .and. dprData%xlon(1,24)<-65) then
+  if(dprData%xlat(24,1)>30 .and. dprData%xlat(24,1)<50 .and. &
+       dprData%xlon(24,1)>-125 .and. dprData%xlon(24,1)<-65) then
+     iconus=1
+  endif
+  n1=300
+  if(dprData%xlat(24,n1)>30 .and. dprData%xlat(24,n1)<50 .and. &
+       dprData%xlon(24,n1)>-125 .and. dprData%xlon(24,n1)<-65) then
      iconus=1
   endif
   print*, 'iConus=',iconus,'****',dprData%xlon(1,24),dprData%xlat(1,24)
