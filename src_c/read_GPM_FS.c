@@ -415,7 +415,7 @@ void read2akux_(char *jobname, char *f2aku, int *n1c21,
 // V3 node definition in test
 //	  nodes[inodes]=(L2AKuDataX.PRE.binClutterFreeBottom[j])/2-1;      
 	  nodes[inodes]=(L2AKuDataX.PRE.binClutterFreeBottom[j] - 2)/2;      
-	  if(nodes[inodes]<0)
+	  if(nodes[inodes]<0 && L2AKuDataX.CSF.typePrecip[j]>0)
 	    {
 	      printf("%i %i \n",nodes[inodes],
 		   L2AKuDataX.PRE.binClutterFreeBottom[j]);

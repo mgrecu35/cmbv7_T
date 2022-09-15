@@ -20,11 +20,19 @@ void rewindc_(int *ic);
 void writescan_fs_300_(int *isc);
 void writescan_300_(int *isc);
 void writescant_300_(int *isc);
+//begin 2/9/22 WSO declare status variable for GMI/TMI
+#define iConus globaldata_mp_iconus_
+int st_GMITMI2_c;
+//end 2/9/22 WSO
 int main(int argc, char *argv[])
 {
   char  fname[100];
   char jobname[255];
   int ifs;
+//begin 2/9/22 WSO declare external variable in main
+  extern int st_GMITMI2_c;
+  extern int globaldata_mp_iconus_;
+//  end 2/9/22
   if(argc != 3)
     {fprintf(stderr, 
 	     "\nCommand Line ERROR-should be 2 arguments (jobname, parameterFile)\n");
@@ -37,6 +45,7 @@ int main(int argc, char *argv[])
   int ialg;
   int ndpr=mainj(1,fname,&ifs,&jobname[0],&ialg);
   printf("Back from mainj() %i %i\n",ndpr,ialg);
+  printf("value of st_GMITMI2_c: %i\n", st_GMITMI2_c);
   
   int ny=49;
   int nx=300;
@@ -47,14 +56,15 @@ int main(int argc, char *argv[])
   int i,one=1;
   int nmu=5, nmfreq=8, orbNumb=0;
   float *dprrain, *tbRgrid;
+  
   tbRgrid=(float*) malloc(sizeof(float)*9300*49*14);
   dprrain=(float*) malloc(sizeof(float)*49*300);
  
   int idir;
   int icL;
   int nchunk=ndpr/300;
-  //nchunk=2;
-  printf("nchunk = %d\n",nchunk);
+  //nchunk=6;
+  //printf("nchunk = %d\n",nchunk);
   //printf("here \n");
   if(ndpr>0)
     {
@@ -68,11 +78,10 @@ int main(int argc, char *argv[])
 	  else
 	    do_chunk_(&i,&one,&idir);
 	  icL=i*300;
-	  //if(i==26)
+	  if(iConus==1)
 	    {
 	      printf("GMIretsub\n");
-	      gmiretsub_(&icL, &i, &orbNumb, &ialg, &idir);
-	      
+	      //gmiretsub_(&icL, &i, &orbNumb, &ialg, &idir, &st_GMITMI2_c);
 	      printf("Calling radarretsub2\n");
 	      radarretsub2_(&nmu,  &nmfreq,   &icL, tbRgrid,  
 			    dprrain, &i, &orbNumb, &ialg, &idir);

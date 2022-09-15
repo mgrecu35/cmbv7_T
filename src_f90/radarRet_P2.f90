@@ -1010,7 +1010,9 @@ subroutine radarRetSub2(nmu2,  nmfreq2,   icL, tbRgrid,               &
                     
                     dPRRet%cldwcoeff(i,j,:,:)=cldwcoeff(1:10,1:nmemb)
                     
-                    
+                    !print*,'maxval=',maxval(radarRet%tb)
+                    !print*,'minval=',minval(radarRet%tb)
+                    !stop
                     if(radarRet%tb(2)>0) ntbpix=ntbpix+1
                     
                     do k=0,nmemb1-1
@@ -1226,9 +1228,11 @@ subroutine radarRetSub2(nmu2,  nmfreq2,   icL, tbRgrid,               &
   print*, 'n86=',sum(dprret%log10dnw(:,86,25,108))/nmemb1
   print*, sum(dprret%d0(:,85,25,108))/nmemb1
   print*, sum(dprret%d0(:,86,25,108))/nmemb1
-
+  !print*,tbRgrid(1,24,icL+1:icL+300)
+  !print*,tbRgrid(1,49,icL+1:icL+300)
+  !print*,tbRgrid(1,1,icL+1:icL+300)
   !stop
-  !print*, dPRRet%tb(:,:,1,1,1)
+  !print*, 'maxval=',maxval(dPRRet%tb),minval(dPRRet%tb)
   !print*,tbRgrid(7,:,1:300)
   !stop
 end subroutine radarRetSub2

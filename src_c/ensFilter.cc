@@ -541,22 +541,17 @@ extern "C" void ensradretstcvku_( radarDataType   *radarData,
       }
 	
 
-  if(stormStruct->rainType!=2)// and radarData->hfreez>=2)
+  if(stormStruct->rainType!=2 || radarData->hfreez<0.1)
     {
-      //printf("%i \n",stormStruct->rainType);
-      for(j=0;j<9;j++)
+      for(j=0;j<5;j++)
 	{
-	 float logdnm=0;
-	 for(i=0;i<radarRet->nMemb;i++)
-	   logdnm+=logdNw[i][j];
-	 logdnm/=radarRet->nMemb;
-	 //printf("%g \n",logdnm);
-	 for(i=0;i<radarRet->nMemb;i++)
-	   if(*wfractPix<10)
-	     logdNw[i][j]=logdnm+0.75*(logdNw[i][j]-logdnm);
-	   else
-	     logdNw[i][j]=logdnm+0.75*(logdNw[i][j]-logdnm);
-       }
+	  float logdnm=0;
+	  for(i=0;i<radarRet->nMemb;i++)
+	    logdnm+=logdNw[i][j];
+	  logdnm/=radarRet->nMemb;
+	  for(i=0;i<radarRet->nMemb;i++)
+	    logdNw[i][j]=0.75*(logdNw[i][j]-logdnm);
+	}
     }
 
   if(*wfractPix>90)
@@ -583,7 +578,23 @@ extern "C" void ensradretstcvku_( radarDataType   *radarData,
    float pia13EnsM=0;
   // printf("Nmemb=%i %i\n",nMemb,stormStruct->iSurf);
 
-
+   if(stormStruct->rainType!=2)// and radarData->hfreez>=2)
+    {
+      //printf("%i \n",stormStruct->rainType);
+      for(j=0;j<9;j++)
+	{
+	 float logdnm=0;
+	 for(i=0;i<radarRet->nMemb;i++)
+	   logdnm+=logdNw[i][j];
+	 logdnm/=radarRet->nMemb;
+	 //printf("%g \n",logdnm);
+	 for(i=0;i<radarRet->nMemb;i++)
+	   if(*wfractPix<10)
+	     logdNw[i][j]=logdnm+0.75*(logdNw[i][j]-logdnm);
+	   else
+	     logdNw[i][j]=logdnm+0.75*(logdNw[i][j]-logdnm);
+       }
+    }
 
   for(i=0;i<radarData->ngates;i++)
     radarData->hh[i]=(nbins-i)*radarData->dr*cos(*localZAngle/180.*3.1415);

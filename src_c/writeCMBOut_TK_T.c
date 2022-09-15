@@ -662,7 +662,7 @@ void copytbout_t_(float *tbout, int *i)
   int k;
   extern L2BCMBT_SWATHS swath_t;
 //begin  WSO 9/16/13
-  for(k=0;k<13;k++)
+  for(k=0;k<9;k++)
     if(tbout[k] > -90.)
       swath_t.KuTMI.simulatedBrightTemp[*i][k]=tbout[k];
     else

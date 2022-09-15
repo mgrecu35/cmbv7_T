@@ -401,7 +401,7 @@ tbs=tb
 
 if(ialg==2) then
    do j=2,n1c21-2
-      do i=2,49-1
+      do i=2,49-2
          if (minval(tb(i,j,1:4))>0) then
             do k=1,4
                tmean=sum(tb(i-1:i+1,j-1:j+1,k))

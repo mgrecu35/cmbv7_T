@@ -10,13 +10,15 @@ int inputParser(char *p2arg, char f1ctmi[3][1000],
 		char f2aKu[1000], char f2aDPR[1000], char f2AKuENV[1000], 
 		char fSNOW[1000], char fSEAICE[1000], char f2CMB[1000], 
 		int *rseed1,int *rseed2, int *ialg, int *ifs);
+//begin 2/9/22 WSO include status code for 2nd GMI/TMI file
 void mainfort_(char jobname[255], char f1ctmi1[1000],char f1ctmi2[1000],
                char f1ctmi3[1000],
 	       char f2AKu[1000], char f2aDPR[1000], char f2AKuENV[1000], 
 	       char fSNOW[1000], char fSEAICE[1000], char f2CMB[1000], 
 	       int *rseed1, int *rseed2,
 	       int *igmi1, int *igmi2, int *igm3, int *i2AKu, int *i2AKuENV, 
-	       int *i2aDPR, int *iSNOW, int *iSEAICE, int *i2CMB, int *ialg, int *ndpr, int *ifs);
+	       int *i2aDPR, int *iSNOW, int *iSEAICE, int *i2CMB, int *ialg, int *ndpr, int *ifs,
+               int *st_GMITMI2);
 
 void mainfort_t_(char jobname[255], char f1ctmi1[1000],char f1ctmi2[1000],
                char f1ctmi3[1000],
@@ -24,7 +26,9 @@ void mainfort_t_(char jobname[255], char f1ctmi1[1000],char f1ctmi2[1000],
 	       char fSNOW[1000], char fSEAICE[1000], char f2CMB[1000], 
 	       int *rseed1, int *rseed2,
 	       int *igmi1, int *igmi2, int *igm3, int *i2AKu, int *i2AKuENV, 
-	       int *i2aDPR, int *iSNOW, int *iSEAICE, int *i2CMB, int *ialg, int *ndpr, int *ifs);
+	       int *i2aDPR, int *iSNOW, int *iSEAICE, int *i2CMB, int *ialg, int *ndpr, int *ifs,
+               int *st_GMITMI2);
+//end 2/9/22 
 
 int main2 (int argc, char *argv[])
 {
@@ -91,6 +95,10 @@ int mainj (int i, char *pfname, int *ifs, char *jobname,int *ialgOut)
   char args[500], *p2arg;
   int igmi1, igmi2, igmi3, i2AKu, i2ADPR, i2AKuENV, iSNOW, iSEAICE, i2CMB;
   int rseed1, rseed2, ialg;
+//begin 2/9/22 WSO declare status variables for 2nd GMI/TMI orbit
+  extern int st_GMITMI2_c;
+  int st_GMITMI2;
+//end 2/9/22
 
   printf("%s \n",pfname);
   strcpy(&pfname2[0],pfname);
@@ -126,17 +134,23 @@ int mainj (int i, char *pfname, int *ifs, char *jobname,int *ialgOut)
   int ndpr;
   printf("%s \n",f2ADPR);
   printf("%s \n",f2AKu);
-  
+  printf("%i \n",ialg);
+  //exit(1);
+//begin 2/9/22 WSO pass status of 2nd GMI/TMI orbit
   if(ialg==1)
     mainfort_(jobname, &f1ctmi[0][0],&f1ctmi[1][0],&f1ctmi[2][0], f2AKu, 
 	      f2ADPR, f2AKuENV, fSNOW, fSEAICE, f2CMB, &rseed1, &rseed2, 
 	      &igmi1, &igmi2, &igmi3, &i2AKu, &i2ADPR, &i2AKuENV, &iSNOW, 
-	      &iSEAICE, &i2CMB, &ialg, &ndpr, ifs);
+	      &iSEAICE, &i2CMB, &ialg, &ndpr, ifs, &st_GMITMI2);
   else
     mainfort_t_(jobname, &f1ctmi[0][0],&f1ctmi[1][0],&f1ctmi[2][0], f2AKu, 
 		f2ADPR, f2AKuENV, fSNOW, fSEAICE, f2CMB, &rseed1, &rseed2, 
 		&igmi1, &igmi2, &igmi3, &i2AKu, &i2ADPR, &i2AKuENV, &iSNOW, 
-		&iSEAICE, &i2CMB, &ialg, &ndpr, ifs);
+		&iSEAICE, &i2CMB, &ialg, &ndpr, ifs, &st_GMITMI2);
+
+  st_GMITMI2_c = st_GMITMI2;
+  printf("GMI/TMI granule status %i\n", st_GMITMI2);
+//end 2/9/22
 
   printf(" COMPLETION %i\n",*ifs) ;
   

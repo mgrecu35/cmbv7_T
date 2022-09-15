@@ -49,10 +49,12 @@ SUBROUTINE init_random_seed2()
   DEALLOCATE(seed)
 END SUBROUTINE init_random_seed2
 
+!begin 2/9/22 WSO pass status of 2nd GMI file
 subroutine mainfort(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
                     f2AKu, f2aDPR, f2AkuENV, fSNOW, fSEAICE, f2CMB,      &
                     rseed1, rseed2, igmi1, igmi2, igmi3, i2AKu,          &
-                    i2ADPR, i2AkuENV, iSNOW, iSEAICE, i2CMB, ialg, ndpr1, ifs)
+                    i2ADPR, i2AkuENV, iSNOW, iSEAICE, i2CMB, ialg, ndpr1, ifs, st_GMI2)
+!end 2/9/22
 
   use iso_c_binding    !iso c binding statement
   use globalData
@@ -93,7 +95,7 @@ subroutine mainfort(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
   character*90 :: lut_file !SJM 7/9/2014
 
 !  SFM  start  09/25/2013
-  character(16), parameter :: algorithmVersion = "2BCMB_20200409"
+  character(16), parameter :: algorithmVersion = "2BCMB_20211122"
   !  SFM  end  09/25/2013
 !  SFM  start  09/27/2013
 !...Variables required for implementation of autosnow option
@@ -123,6 +125,9 @@ subroutine mainfort(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
     integer*4     i, ifract, idir
     real :: x1L, x2L
 !  SFM  end    01/02/2014
+!begin 2/9/22 WSO status code for 2nd 1CGMI file
+    integer *4    st_GMI2
+!end 2/9/22
   
 !  SFM  04/06/2013  Added code and supporting datasets for query_2akuenv, 
 !                     allocate_2AKuENV_space, and read_2kauenv 
@@ -373,6 +378,9 @@ subroutine mainfort(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
              GMIdata%S2eia(:,ngmi_total+1:ngmimax), &
              GMIData%S1sga(:,ngmi_total+1:ngmimax)) !SJM 3/15/16
      ENDIF
+!begin 2/9/22 WSO assign status code to st_GMI2
+     st_GMI2 = st_2
+!end 2/9/22
      ngmi_total=ngmi2+ngmi_total
      
      ngmi3=0
@@ -694,6 +702,12 @@ subroutine do_chunkx(i,ialg, idir)
           dPRData%envTemp,dPRData%binClutterFree,dPRData%binZeroDegree)
   endif
   print*, maxval(dPRData%xlat)
+  iconus=0
+  if(dprData%xlat(1,24)>30 .and. dprData%xlat(1,24)<50 .and. &
+       dprData%xlon(1,24)>-125 .and. dprData%xlon(1,24)<-65) then
+     iconus=1
+  endif
+  print*, 'iConus=',iconus,'****',dprData%xlon(1,24),dprData%xlat(1,24)
   IF (i .EQ. 1) PRINT *,'File read status 2ADPR : ',st_2adpr
   print*, dPRData%n1c21, st_2akuenv
   

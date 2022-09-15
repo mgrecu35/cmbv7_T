@@ -7,11 +7,12 @@
 !npol 0 H, npol 1 V
 
 
-
+!begin 2/9/22 WSO pass status of second TMI file
 subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
                     f2AKu, f2aDPR, f2AkuENV, fSNOW, fSEAICE, f2CMB,      &
                     rseed1, rseed2, igmi1, igmi2, igmi3, i2AKu,          &
-                    i2ADPR, i2AkuENV, iSNOW, iSEAICE, i2CMB, ialg, ndpr1, ifs)
+                    i2ADPR, i2AkuENV, iSNOW, iSEAICE, i2CMB, ialg, ndpr1, ifs, st_TMI2)
+!end 2/9/22
 
   use iso_c_binding    !iso c binding statement
   use globalData
@@ -82,6 +83,9 @@ subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
     integer*4     i, ifract, idir
     real :: x1L, x2L
 !  SFM  end    01/02/2014
+!begin 2/9/22 WSO status code for 2nd 1CTMI file
+    integer *4    st_TMI2
+!end 2/9/22
   
 !  SFM  04/06/2013  Added code and supporting datasets for query_2akuenv, 
 !                     allocate_2AKuENV_space, and read_2kauenv 
@@ -140,7 +144,7 @@ subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
   call readdmnw()
 
 !  SFM  start  11/18/2013
-  nMemb=50
+  nMemb=5
 !  SFM  end    11/18/2013
   ifdpr(1:1)='N'
   
@@ -162,6 +166,8 @@ subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
 		    st_seaice, st_cmb, date_number, orbitNumber)
 
 103 continue
+    print*, 'date_number',date_number
+    !stop
 
 !  SFM  start  01/02/2014  reworked checks for nil and dead files
       print*, 'here'
@@ -282,6 +288,9 @@ subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
              GMIdata%S1eia(:,ngmi_total+1:ngmimax), &
              GMIdata%S2eia(:,ngmi_total+1:ngmimax)) !SJM 3/15/16
      ENDIF
+!begin 2/9/22 WSO assign status code to st_TMI2
+     st_TMI2 = st_2
+!end 2/9/22
      ngmi_total=ngmi2+ngmi_total
      
      ngmi3=0
@@ -376,7 +385,8 @@ subroutine mainfort_t(jobname, f1ctmi1,f1ctmi2,f1ctmi3,                    &
   month_get = (date_number/100) - (date_number/10000) * 100
   year = date_number/10000
   dd   = date_number - year*10000 - month_get * 100
-  print*, month_get
+!  print*, 'month: ', month_get
+!  stop
   !these routines will no longer be needed...but keep for now
   call read_emis_s0_map(month_get)
   write(lut_file,'(A22,I2.2,A4)') 'gpm_surfmaps/surfmaps.',month_get,'.dat'

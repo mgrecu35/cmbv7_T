@@ -167,7 +167,7 @@ subroutine radarRetSub4_FS(nmu2,  nmfreq2,   icL, tbRgrid,               &
   integer :: flagScanPattern, flagScanPattern_0
   real    :: dm3d_a(nbin,49,300), dm3dMS_a(nbin,49,300), log10NwMean_a(nbin), &
        nw3d_a(nbin,49,300), nw3dms_a(nbin,49,300)
-
+  integer :: ialg1
   data env_levs/18., 14., 10., 8., 6., 4., 2., 1., 0.5, 0./
   iconv=1
   nmemb1=nmemb
@@ -220,17 +220,17 @@ subroutine radarRetSub4_FS(nmu2,  nmfreq2,   icL, tbRgrid,               &
   !stop
   if(iconv==1) then
    call updateTbs(dPRData%n1c21,tbObs(:,:,1:9),&
-        tbout2D(:,:,1:9),tb(:,:,1:9),fpmap(:,:,1:9),ialg)
+        tbout2D(:,:,1:9),tb(:,:,1:9),fpmap(:,:,1:9),ialg1)
    call updateTbsL(dPRData%n1c21,tbObs(:,:,1:9),tbout2DNoOcean(:,:,1:9),&
-        tbNoOcean(:,:,1:9),fpmapN(:,:,1:9),ialg)
-  
+        tbNoOcean(:,:,1:9),fpmapN(:,:,1:9),ialg1)
+   ialg1=ialg
 !begin  MG 9/17/18 added following code to adjust deconvolution
    if(ialg==2) then
-      do i=1,2
+      do i=1,1
          call updateTbs(dPRData%n1c21,tbObs(:,:,1:9),&
-              tbout2D(:,:,1:9),tb(:,:,1:9),fpmap(:,:,1:9),ialg)
+              tbout2D(:,:,1:9),tb(:,:,1:9),fpmap(:,:,1:9),ialg1)
          call updateTbsL(dPRData%n1c21,tbObs(:,:,1:9),tbout2DNoOcean(:,:,1:9),&
-              tbNoOcean(:,:,1:9),fpmapN(:,:,1:9),ialg)
+              tbNoOcean(:,:,1:9),fpmapN(:,:,1:9),ialg1)
       enddo
    endif
 !end    MG 9/17/18
@@ -375,6 +375,7 @@ dm3d_a=missing_r4
 dm3dms_a=missing_r4
 nw3d_a=missing_r4
 nw3dms_a=missing_r4
+!dPRRet%tb=-99 ! set tbs to -99
 do j=1,dPRData%n1c21
    do i=1,49
 !  SFM  begin  07/29/2014; for M.Grecu, elminate NANs
@@ -442,7 +443,7 @@ do j=1,dPRData%n1c21
 !filterUpNS(dPRData,dPRRet, Xens,Yens,Yobs,Xup,tb,&
 !     dprRain,sfcRain,nmemb1,ic,i,j,&
 !     nxu,nyu,wfractm,s0KuVar,s0KaVar,s0Cov,hFreqTb)
-
+         
          if(wfractm>99 .and. stype .eq. 1) then
             call filterUpNS(dPRData,dPRRet, Xens,Yens,Yobs,Xup,  &
                  tb,dprRain,sfcRain,nmemb1,ic,i,j,nx,ny,wfractm,&
@@ -1174,6 +1175,11 @@ do j=1,dPRData%n1c21
          call copyd0s2_a_fs(dm3dms_a(:,i,j),i-1)  ! apriori dm
          call copyzcku_t(zcKu3D(:,i,j),i-1)
          call copynodes_t(dPRData%node(:,i,j),i-1)
+         call estimated_sfc_precip1_t(i-1, rrate3D(:,i,j),rrate3Dstd(:,i,j),&
+              sfcRain(i,j), dprData%binRealSurface(i,j), &
+              dprData%binZeroDegree(i,j), dprData%binClutterFree(i,j),&
+              pType(j,i),sfcRainLiqFrac(i, j))
+
       else
          call copycldwaters1_fs(cldwprof,i-1)
          cldiprof = missing_r4

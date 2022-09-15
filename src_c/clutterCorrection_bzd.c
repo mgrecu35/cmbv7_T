@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "TK_2BCMB.h"
+#include "TK_2BCMBT.h"
 #include "math.h"
 
 extern float missingmod_mp_missing_r4_;
@@ -146,6 +147,118 @@ void estimated_sfc_precip1_(int *i, float *pRate1d, float *pRateStd1d, float *sf
 87 88 81 0.323459 0.444358 
 87 88 81 0.332284 0.195314 
 */
+/*
+if itop<39 and pType[i,j]>0:
+pRateCS=pRateShape[itop:min(ibott,39),fzClass]
+  if pRateCS[0]>0.1:
+  cPRate=precipRate[i,j,bcf[i,j]-50]*pRateCS/pRateCS[0]
+    nExt=cPRate.shape[0]
+    kmax=1
+    sfcPrecipRateC[i,j]=precipRate[i,j,bcf[i,j]-50]
+    pRL=precipRate[i,j,bcf[i,j]-50]
+    for k in range(1,binSfc[i,j]-bcf[i,j]+1):
+    if 2*k<nExt:
+      precipRate[i,j,bcf[i,j]-50+k]=cPRate[2*k]
+	pRL=precipRate[i,j,bcf[i,j]-50+k]
+	kmax=k
+	s3+=pRL
+	sfcPrecipRateC[i,j]=pRL
+*/
+
+
+void estimated_sfc_precip1_t_(int *i, float *pRate1d, float *pRateStd1d, float *sfcRain, 
+			    int *sfc, int *bzd, int *cfb, int *ptype, float *liqFract)
+{
+  extern L2BCMBT_SWATHS swath_t;
+  int j0, itop, ibott, fzClass;
+  float est_Surf_Precip=*sfcRain;
+  float pRateCS[40];
+  swath_t.KuTMI.lowestUnclutteredBin[*i]=swath_t.KuTMI.phaseBinNodes[*i][4];
+  swath_t.KuTMI.lowestEstimateBin[*i]=swath_t.KuTMI.phaseBinNodes[*i][4];
+  float liqFractR;
+  int sfc2=2*(*sfc), sfcType,iType;
+  if(swath_t.KuTMI.Input.surfaceType[*i]==0)
+    {
+      sfc2=175;
+      sfcType=0;
+    }
+  else
+    sfcType=1;
+  //printf("%i %i %i %i\n",sfc2,*bzd,*cfb,swath_t.KuTMI.Input.surfaceType[*i]);
+  int i1,i2;
+  double localZenith=swath_t.KuTMI.Input.localZenithAngle[*i];
+  i1=(int)(0.5+((*cfb)-(*bzd))*cos(localZenith/180*3.1416));
+  i2=(int)(0.5+(sfc2-(*bzd))*cos(localZenith/180*3.1416));
+  i1+=30;
+  i2+=30;
+  i2-=4;
+  if(i1>70)
+    i1=70;
+  if(i2>70)
+    i2=70;
+  if(i1<0)
+    i1=0;
+  if(i2<0)
+    i2=0;
+  if(i2<i1)
+    i2=i1;
+  if(*ptype>0)
+    {
+      int n2;
+      itop=*cfb-0-130;
+      ibott=(*sfc+1)*2-1-130;
+      //printf("isfc=%i %i\n",*sfc,*cfb);
+      fzClass=*bzd-128;
+      if (fzClass>49) fzClass=49;
+
+      swath_t.KuTMI.lowestEstimateBin[*i]=(int)(*sfc);
+      int dRange=(int)(*sfc-(*bzd)/2);
+      liqFractR=*liqFract;
+      if(dRange>=4)
+	liqFractR=1;
+      else
+	if(dRange>=0 && dRange<4)
+	  liqFractR=dRange/4.0;
+      
+      swath_t.KuTMI.FLG.estimPrecipInClutter[*i]=1;
+      float rRatio;
+      if(*ptype==1)
+	iType=0;
+      else
+	iType=1;
+      rRatio=pRate_bzd_Tables[sfcType][iType][i2]/	\
+	pRate_bzd_Tables[sfcType][iType][i1];
+      if(rRatio>1.5)
+	rRatio=1.5;
+      swath_t.KuTMI.estimSurfPrecipTotRate[*i]=rRatio*
+	swath_t.KuTMI.nearSurfPrecipTotRate[*i];
+      swath_t.KuTMI.estimSurfPrecipTotRateSigma[*i]=rRatio*
+	pRateStd1d[(int)(*cfb/2)-1];
+      swath_t.KuTMI.estimSurfPrecipLiqRate[*i]=rRatio*
+	swath_t.KuTMI.nearSurfPrecipTotRate[*i]*liqFractR;
+    }
+  else
+    {
+      //missing_r4c;
+      swath_t.KuTMI.lowestEstimateBin[*i]=87;
+      swath_t.KuTMI.estimSurfPrecipTotRate[*i]=0;
+      swath_t.KuTMI.estimSurfPrecipLiqRate[*i]=0;
+      swath_t.KuTMI.estimSurfPrecipTotRateSigma[*i]=0;
+      swath_t.KuTMI.FLG.estimPrecipInClutter[*i]=0;
+    }
+
+  if(swath_t.KuTMI.estimSurfPrecipTotRate[*i]<0)
+    swath_t.KuTMI.estimSurfPrecipTotRate[*i]=missing_r4c;
+  if(swath_t.KuTMI.estimSurfPrecipLiqRate[*i]<0)
+    swath_t.KuTMI.estimSurfPrecipLiqRate[*i]=missing_r4c;
+  if(swath_t.KuTMI.estimSurfPrecipTotRateSigma[*i]<0)
+    swath_t.KuTMI.estimSurfPrecipTotRateSigma[*i]=missing_r4c;
+  //printf("%i %i \n",  swath_t.KuTMI.lowestEstimateBin[*i],swath_t.KuTMI.phaseBinNodes[*i][4]);
+  //swath_t.KuTMI.estimSurfPrecipTotWaterCont[*i]=missing_r4c;
+ //swath_t.KuTMI.estimSurfPrecipLiqWaterCont[*i]=missing_r4c;
+}
+
+
 /*
 if itop<39 and pType[i,j]>0:
 pRateCS=pRateShape[itop:min(ibott,39),fzClass]

@@ -44,21 +44,21 @@ INC=    -I$(HDF4_INC)\
 	-Iflann/include/\
         -I$(TKIO)/inc/ccode\
         -I/usr/local/include/\
-        -I$(TKIO)/inc/fortcode
+        -I$(TKIO)/inc/fortcode -IFKB/build/include
 	
 #---Required library files
 LIB =	-L$(HDF5_LIB) \
 	-L$(HDF4_LIB) \
 	-L$(TKIO)/lib \
 	-Llapack-3.4.1\
-	-Lflann/lib -Lmultiscatter-1.2.10/lib 
+	-Lflann/lib -Lmultiscatter-1.2.10/lib -LFKB/build/lib
 
 #---List of Normal Libraires to Search for References during Linkage
 
 LIBES = -ltkcselect  \
         -ltkchdf5algs -ltkchdf5 -ltkc -lm -lmfhdf -ldf -lhdf5_hl -lhdf5 \
         -lz   -ldl -lhdf5_fortran  -lmultiscatter \
-	-llapack -lblas 
+	-llapack -lblas -lneural
 
 
 #---Compile Stages
@@ -89,7 +89,8 @@ OBJ =	    main.o f90DataTypes.o  random.o writegif.o nbin.o\
     kgainBLAS.o interp_melt_percentages.o \
     rteModule.o getScattProp.o armadillo_funcs.o cmbAlg.o\
     writeCMBOut_TK_FS.o  writeCMBOut_TK.o writeCMBTOut_TK.o writeCMBOut_TK_T.o\
-    clutterCorrection_bzd.o oe_output_kugmi.o check_nan.o oe_output_kutmi.o 
+    clutterCorrection_bzd.o oe_output_kugmi.o check_nan.o oe_output_kutmi.o \
+    keras_def.o test_keras.o
 
 #read_TRMM.o read_GPM.o
 OBJEXE	=    $(OBJ)  mainf.o mainf_t.o  
@@ -168,6 +169,12 @@ pcaModule.o:	pcaModule.f90
 outputminmax.o:	src_f90/outputminmax.f90 
 		$(F90) -c  -O2 src_f90/outputminmax.f90 
 
+test_keras.o:	FKB/test_keras.f90 keras_def.o
+		$(F90) -IFKB/build/include -c  -O2 FKB/test_keras.f90 
+
+keras_def.o:	FKB/keras_def.f90
+		$(F90) -IFKB/build/include -c  -O2 FKB/keras_def.f90 
+
 l1l1l1.o:       l1l1l1.f90 
 		$(F90) -c  -O2 l1l1l1.f90 
 
@@ -216,7 +223,7 @@ flannModule.o:	src_c/flannModule.c
 dboux.o:	src_c/dboux.c
 		$(CC) -c -O2 src_c/dboux.c
 
-cmbAlg.o:	src_c/cmbAlg.c
+cmbAlg.o:	src_c/cmbAlg.c src_f90/globModule.f90 
 		$(CC) -c -O2 src_c/cmbAlg.c
 
 writeA.o:	writeA.c
@@ -250,19 +257,19 @@ kgainBLAS.o:	src_f90/kgainBLAS.f90
 simCSTbs2.o:	simCSTbs2.f90 
 		$(F90) -c  -O2 simCSTbs2.f90 
 
-radarRet.o:	src_f90/radarRet.f90 				
+radarRet.o:	src_f90/radarRet.f90 	src_f90/globModule.f90 			
 		$(F90) -c  -O0 -qopenmp src_f90/radarRet.f90 
 
-radarRet_P1.o:	src_f90/radarRet_P1.f90 				
+radarRet_P1.o:	src_f90/radarRet_P1.f90 src_f90/globModule.f90 				
 		$(F90) -c  -O0 -qopenmp src_f90/radarRet_P1.f90 
 
-radarRet_P2.o:	src_f90/radarRet_P2.f90 				
+radarRet_P2.o:	src_f90/radarRet_P2.f90 src_f90/globModule.f90 				
 		$(F90) -c  -O0 -qopenmp src_f90/radarRet_P2.f90 
 
-radarRet_P4.o:	src_f90/radarRet_P4.f90 rteModule.o 				
+radarRet_P4.o:	src_f90/radarRet_P4.f90 rteModule.o src_f90/globModule.f90 				
 		$(F90) -c  -O0 -qopenmp src_f90/radarRet_P4.f90 
 
-radarRet_P4_FS.o:	src_f90/radarRet_P4_FS.f90 rteModule.o 				
+radarRet_P4_FS.o:	src_f90/radarRet_P4_FS.f90 rteModule.o 	src_f90/globModule.f90 			
 		$(F90) -c  -O0 -qopenmp src_f90/radarRet_P4_FS.f90 
 
 radarRet.Empty.o:	src_f90/radarRet.Empty.f90 				
@@ -333,10 +340,10 @@ setOpt.o:	src_f90/setOpt.f90
 latlon.o:	src_f90/latlon.f90 
 		$(F90) -c -O2 src_f90/latlon.f90 
 
-mainf.o:	src_f90/mainf.f90 src_f90/f90DataTypes.f90 
+mainf.o:	src_f90/mainf.f90 src_f90/f90DataTypes.f90 src_f90/globModule.f90 
 		$(F90) -c -O2 $(OPENMPF) src_f90/mainf.f90
 
-mainf_t.o:	src_f90/mainf_t.f90 src_f90/f90DataTypes.f90 
+mainf_t.o:	src_f90/mainf_t.f90 src_f90/f90DataTypes.f90 src_f90/globModule.f90  
 		$(F90) -c -O2 $(OPENMPF) src_f90/mainf_t.f90
 
 get1Cprof.o:	get1Cprof.f90 

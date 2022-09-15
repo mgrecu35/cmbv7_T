@@ -42,4 +42,5 @@ module globalData
   INTEGER*4     ngmi_total       ! Accumulated 1CGMI read total
   real :: gmistart_sec, dprstart_sec !SJM 12/12/2014
   integer :: i2ADPRc, i2AKuc,i2AKuENVc
+  integer :: iconus
 end module globalData

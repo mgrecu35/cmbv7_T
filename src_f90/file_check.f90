@@ -75,10 +75,9 @@ SUBROUTINE file_check (igmi1, igmi2, igmi3, i2aku, i2adpr, i2akuenv, isnow,    &
                        stat_2aku)
     main_date  = date_2aku
     main_orbit = orbit_2aku  
-    print*, file_2aku
     PRINT *,'Retrieved 2AKu Orbit Number : ',main_orbit
     PRINT *,'Retrieved 2AKu Date Number  : ',main_date
-
+    
 !...Check CGMI 1 file
     CALL single_verify(igmi1,file_gmi1,orbit_gmi1,date_gmi1,alg_gmi1,          &
                        stat_gmi1)
@@ -86,8 +85,11 @@ SUBROUTINE file_check (igmi1, igmi2, igmi3, i2aku, i2adpr, i2akuenv, isnow,    &
 !...Check CGMI 2 file
     CALL single_verify(igmi2,file_gmi2,orbit_gmi2,date_gmi2,alg_gmi2,          &
                        stat_gmi2)
+!temp kluge
     if (main_date.eq.0)    main_date  = date_gmi2
     if (main_orbit.eq.0)   main_orbit = orbit_gmi2
+!end kluge
+    
 !...Check CGMI 3 file
     CALL single_verify(igmi3,file_gmi3,orbit_gmi3,date_gmi3,alg_gmi3,          &
                        stat_gmi3)
@@ -172,10 +174,12 @@ SUBROUTINE file_check (igmi1, igmi2, igmi3, i2aku, i2adpr, i2akuenv, isnow,    &
 	alg_gmi3 .NE. '1CGMI' .OR. alg_2akuenv .NE. '2AKuENV')                 &
         PRINT *,'WARNING: some algorithm IDs incorrect ',alg_2aku,             &
 	         alg_gmi1,alg_gmi2,alg_gmi3,alg_2adpr,alg_2akuenv
-	
+    print*, main_date, main_orbit, date_2akuenv, date_gmi2, date_2aku
+    !stop 
+!temp kluge
     if(main_date==0) main_date=date_2akuenv
     if(main_orbit==0) main_orbit=orbit_2akuenv
-
+!end kluge
     RETURN
     END
 
