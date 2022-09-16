@@ -1,0 +1,17 @@
+[ 25%] Building CXX object src/cpp/CMakeFiles/flann_s.dir/flann/flann.cpp.o
+Linking CXX static library ../../lib/libflann_s.a
+[ 25%] Built target flann_s
+Linking CXX shared library ../../lib/libflann.so
+[ 25%] Built target flann
+[ 50%] Building CXX object src/cpp/CMakeFiles/flann_cpp_s.dir/flann/flann_cpp.cpp.o
+Linking CXX static library ../../lib/libflann_cpp_s.a
+[ 50%] Built target flann_cpp_s
+Linking CXX shared library ../../lib/libflann_cpp.so
+[ 50%] Built target flann_cpp
+[ 75%] Building CXX object examples/CMakeFiles/flann_example_cpp.dir/flann_example.cpp.o
+Linking CXX executable ../bin/flann_example_cpp
+[ 75%] Built target flann_example_cpp
+[100%] Building C object examples/CMakeFiles/flann_example_c.dir/flann_example.c.o
+Linking CXX executable ../bin/flann_example_c
+[100%] Built target flann_example_c
+[100%] Built target examples

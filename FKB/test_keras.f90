@@ -118,3 +118,38 @@ subroutine call_keras2(input_data,output_data,n)
      output_data(i,3)=Dm
   end do
 end subroutine call_keras2
+
+subroutine call_keras21(zku,zka,nw,iwc,dm)
+  use keras_def
+  integer :: n
+  integer :: i
+  real :: xm(3),xs(3),ym(3),ys(3), dwr, zku,zka
+  real :: yhat(3)
+  real :: IWC,Nw,Dm,pi
+  xm=(/11.61196423,   1.62957636, -19.86298585/)
+  xs=(/13.30597739,  2.15601794, 11.72233551/)
+  ym=(/8.00513416, -0.26086958,  0.11921838/)
+  ys=(/0.78638963, 0.21327072, 0.291193/)
+  pi=3.141592653589793
+  if (zku<0) zku=0
+  if (zka<0) zka=0
+  dwr=zku-zka
+  if(dwr<-1) dwr=-1
+  if(dwr>11) dwr=11
+  input2(1)=(zku-xm(1))/xs(1)
+  input2(2)=(dwr-xm(2))/xs(2)
+  input2(3)=(-5-xm(3))/xs(3)
+  result2 = net % output(input2)
+  do k=1,2
+     yhat(k)=result2(k)*ys(k)+ym(k)
+  enddo
+  yhat(2) = 10.0**yhat(2) 
+  Nw=yhat(1)
+  Dm=yhat(2)
+  Nw = 10**Nw !undo log, should be in m^-4
+  Dm = Dm ! in mm
+  IWC = (Nw*(Dm)**4*1000*pi)/4.0**(4) ! the 1000 is density of water (kg/m^3)
+  IWC = IWC*1000 !convert to g/m^3 
+  
+  
+end subroutine call_keras21
